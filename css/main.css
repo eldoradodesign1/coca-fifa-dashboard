@@ -526,6 +526,11 @@ body.dark-mode {
   z-index: -1;
 }
 
+.slide::-webkit-scrollbar {
+  /* display: none; */
+  width: 8px;
+}
+
 .slide.active {
   opacity: 1;
   pointer-events: auto;
