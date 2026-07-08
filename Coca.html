@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard CRM Coca-Cola FIFA 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* CORE REINITIALISATION & CURSEUR */
+        * { box-sizing: border-box; margin: 0; padding: 0; cursor: none !important; }
+        
+        body {
+            background-color: #050000;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* CURSEUR INTERACTIF HAUT DE GAMME */
+        #custom-cursor {
+            width: 8px;
+            height: 8px;
+            background: #F40009;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+        #cursor-halo {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(244, 0, 9, 0.18) 0%, transparent 70%);
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: screen;
+        }
+
+        /* ENVIRONNEMENT PRESENTATION ACCESSIBLE */
+        .presentation-deck {
+            width: 100%;
+            height: 100%;
+            max-width: 1366px;
+            max-height: 768px;
+            position: relative;
+            background-color: #070000;
+            border-radius: 0px;
+            overflow: hidden;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.9);
+        }
+
+        /* STRATEGIE ARRIERE PLAN ESTOMPE */
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 60px 80px;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.98) translateY(10px);
+            transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            z-index: 1;
+            
+            /* Injection subtile de l'image de campagne sous le gradient */
+            background-image: 
+                linear-gradient(135deg, rgba(16, 1, 1, 0.94) 0%, rgba(5, 0, 0, 0.97) 100%), 
+                url('http://googleusercontent.com/image_collection/image_retrieval/16650258172486087335_0');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1) translateY(0);
+            z-index: 2;
+        }
+
+        /* GLASSMORPHISM PREMIUM CORE */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px) saturate(120%);
+            -webkit-backdrop-filter: blur(20px) saturate(120%);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            transition: border-color 0.4s, background-color 0.4s;
+        }
+        .glass-panel:hover {
+            border-color: rgba(244, 0, 9, 0.3);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* TYPO & STRUCTURATION */
+        h1, h2, h3 { font-family: 'Poppins', sans-serif; font-weight: 700; letter-spacing: -0.5px; }
+        .slide-header { border-left: 5px solid #F40009; padding-left: 20px; margin-bottom: 40px; }
+        .slide-title { font-size: 38px; text-transform: uppercase; letter-spacing: 1px; }
+        p, li { font-size: 17px; line-height: 1.6; color: rgba(255,255,255,0.7); }
+
+        /* GRILLES & FLEX INTERACTIFS */
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: auto; margin-bottom: auto; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+
+        .interactive-card {
+            background: rgba(255,255,255,0.01);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 20px;
+            padding: 35px 25px;
+            text-align: center;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.4s, background-color 0.4s;
+        }
+        .interactive-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(244,0,9,0.4);
+            background: rgba(244,0,9,0.03);
+        }
+        .interactive-card i { font-size: 42px; color: #F40009; margin-bottom: 20px; text-shadow: 0 0 20px rgba(244,0,9,0.4); }
+        .interactive-card .huge-number { font-size: 48px; font-weight: 700; color: #fff; margin-bottom: 10px; }
+
+        /* JAUGE DE REPARTITION DYNAMIQUE */
+        .metrics-stack { display: flex; flex-direction: column; gap: 20px; }
+        .metric-row { display: flex; align-items: center; gap: 20px; }
+        .metric-label { width: 240px; text-align: right; font-weight: 500; font-size: 16px; }
+        .track { flex-grow: 1; height: 12px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.03); }
+        .fill { height: 100%; background: linear-gradient(90deg, #900004, #F40009); border-radius: 10px; transform: scaleX(0); transform-origin: left; transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1); }
+        .slide.active .fill { transform: scaleX(1); }
+
+        /* DATA FILTER COMPONENT (SLIDE 5 INTERACTIVE) */
+        .filter-nav { display: flex; gap: 15px; margin-bottom: 30px; }
+        .filter-btn { padding: 12px 24px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 30px; color: #fff; font-size: 14px; font-weight: 500; transition: all 0.3s; }
+        .filter-btn.active, .filter-btn:hover { background: #F40009; border-color: #F40009; box-shadow: 0 0 15px rgba(244,0,9,0.4); }
+
+        /* TABLE INTERACTIF */
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { padding: 18px; background: rgba(244,0,9,0.1); font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.9); border-bottom: 2px solid rgba(244,0,9,0.3); }
+        td { padding: 18px; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 15px; transition: background-color 0.2s; }
+        tr:hover td { background: rgba(255,255,255,0.02); color: #fff; }
+
+        /* NAVIGATION INTERFACE DECK */
+        .deck-controls { position: absolute; bottom: 30px; left: 80px; right: 80px; display: flex; justify-content: space-between; align-items: center; z-index: 100; pointer-events: auto; }
+        .nav-arrows { display: flex; gap: 20px; }
+        .arrow { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: center; align-items: center; transition: all 0.3s; }
+        .arrow:hover { background: #fff; color: #050000; scale: 1.05; }
+        .indicators { display: flex; gap: 8px; }
+        .dot { width: 6px; height: 6px; background: rgba(255,255,255,0.2); border-radius: 50%; transition: all 0.3s; }
+        .dot.active { width: 24px; background: #F40009; border-radius: 4px; }
+        .meta-info { font-size: 12px; color: rgba(255,255,255,0.3); letter-spacing: 1px; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+<div id="custom-cursor"></div>
+<div id="cursor-halo"></div>
+
+<div class="presentation-deck">
+
+    <div class="slide active" id="s1">
+        <div style="margin: auto; text-align: center; position: relative;">
+            <h1 style="font-size: 80px; line-height: 1.05; font-weight: 700; margin-bottom: 20px;">
+                CRM PROMO<br><span style="color:#F40009; text-shadow: 0 0 40px rgba(244,0,9,0.4);">FIFA 2026</span>
+            </h1>
+            <p style="font-size: 18px; letter-spacing: 6px; text-transform: uppercase; opacity: 0.5; font-weight: 300;">Rapport Consolidé Activité • Semaines 1 — 4</p>
+        </div>
+    </div>
+
+    <div class="slide" id="s2">
+        <div class="slide-header">
+            <div class="meta-info">Section 01</div>
+            <h2 class="slide-title">Contexte Opérationnel</h2>
+        </div>
+        <div class="grid-2" style="margin: auto 0;">
+            <p style="font-size: 24px; line-height: 1.7; font-weight: 300; color: rgba(255,255,255,0.9);">
+                Lancement stratégique de la campagne d'activation le 8 Juin 2026. Prise en main immédiate du support de gestion par l'équipe CRM le 9 Juin afin de structurer la remontée de données et optimiser l'entonnoir d'engagement.
+            </p>
+            <div class="glass-panel">
+                <h3 style="margin-bottom: 15px; color: #F40009;"><i class="fa-solid fa-crosshairs" style="margin-right: 10px;"></i> Mission Clé</h3>
+                <p>Transformer le flux brut d'appels entrants et d'interactions WhatsApp en rapports qualitatifs exploitables pour l'audit marketing final.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="s3">
+        <div class="slide-header">
+            <div class="meta-info">Section 02</div>
+            <h2 class="slide-title">Indicateurs Majeurs (KPI)</h2>
+        </div>
+        <div class="grid-3">
+            <div class="interactive-card">
+                <i class="fa-solid fa-database"></i>
+                <div class="huge-number">870+</div>
+                <h3>Lignes CRM</h3>
+                <p style="font-size: 14px; margin-top: 10px;">Enregistrements d'incidents consolidés et qualifiés.</p>
+            </div>
+            <div class="interactive-card">
+                <i class="fa-solid fa-filter"></i>
+                <div class="huge-number">100%</div>
+                <h3>Segmentation</h3>
+                <p style="font-size: 14px; margin-top: 10px;">Saisie rigoureuse par type de plainte et région.</p>
+            </div>
+            <div class="interactive-card">
+                <i class="fa-solid fa-map-location-dot"></i>
+                <div class="huge-number">Hub</div>
+                <h3>Kinshasa</h3>
+                <p style="font-size: 14px; margin-top: 10px;">Épicentre du traitement opérationnel Eldorado.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="s4">
+        <div class="slide-header">
+            <div class="meta-info">Section 03</div>
+            <h2 class="slide-title">Matrice des Incidents</h2>
+        </div>
+        <div class="glass-panel" style="padding: 0; overflow: hidden; margin-top: auto; margin-bottom: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Catégorisation</th>
+                        <th>Réalité Terrain Constatée</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong style="color: #F40009;">Code Illisible</strong></td>
+                        <td>Impression défaillante sous capsule (caractères effacés ou ambigus).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Code Rejeté</strong></td>
+                        <td>Le consommateur tape le code correctement mais le Chatbot l'invalide.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Gain Différé</strong></td>
+                        <td>Validation du lot acquise mais latence de distribution via les API partenaires.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Erreur Système</strong></td>
+                        <td>Coupure technique de communication réseau sur le bot WhatsApp officiel.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="slide" id="s5">
+        <div class="slide-header">
+            <div class="meta-info">Section 04 • Module Dynamique</div>
+            <h2 class="slide-title">Analyse Chronologique par Filtre</h2>
+        </div>
+        <div class="filter-nav">
+            <button class="filter-btn active" onclick="updateWeeklyData(1, '112', 'Stable', '45%')">Semaine 1</button>
+            <button class="filter-btn" onclick="updateWeeklyData(2, '245', 'Alerte Impression', '58%')">Semaine 2</button>
+            <button class="filter-btn" onclick="updateWeeklyData(3, '412', 'Surcharge réseau', '62%')">Semaine 3</button>
+            <button class="filter-btn" onclick="updateWeeklyData(4, '870+', 'Alerte Critique', '75%')">Semaine 4</button>
+        </div>
+        <div class="grid-2" style="margin-top: 10px;">
+            <div class="glass-panel" style="text-align: center;">
+                <h3 id="week-title" style="color: #F40009; margin-bottom: 20px;">Statistiques Semaine 1</h3>
+                <div style="font-size: 64px; font-weight: 700; id='ticket-count'">112</div>
+                <p>Tickets Enregistrés</p>
+                <div id="week-status" style="margin-top: 15px; padding: 6px 15px; background: rgba(34, 197, 94, 0.2); border-radius: 20px; display: inline-block; color: #22c55e;">Phase Test / Stable</div>
+            </div>
+            <div class="metrics-stack">
+                <div class="metric-row">
+                    <div class="metric-label">Taux d'incidents capsule</div>
+                    <div class="track"><div class="fill" id="bar-fill-1" style="width: 45%;"></div></div>
+                </div>
+                <p style="font-size: 14px; opacity: 0.6;">Cliquez sur les boutons de semaine ci-dessus pour observer l'évolution exponentielle des goulots d'étranglement.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="s6">
+        <div class="slide-header">
+            <div class="meta-info">Section 05</div>
+            <h2 class="slide-title">Point Critique : Lisibilité</h2>
+        </div>
+        <div class="grid-2" style="margin: auto 0;">
+            <div class="glass-panel">
+                <h3 style="color: #F40009; margin-bottom: 15px;"><i class="fa-solid fa-eye-slash" style="margin-right: 10px;"></i> Anomalie Majeure</h3>
+                <p style="font-size: 18px; margin-bottom: 15px;">**65%** du cumul des réclamations provient directement d'un défaut d'impression jet d'encre sous la capsule.</p>
+                <p>La confusion récurrente entre le **chiffre 0** et la **lettre O**, ainsi que des caractères tronqués par le processus industriel, brisent l'expérience utilisateur et génèrent une frustration immédiate au moment de la saisie.</p>
+            </div>
+            <div class="glass-panel" style="background: rgba(244,0,9,0.02); border-color: rgba(244,0,9,0.15);">
+                <h3 style="margin-bottom: 15px;">Surcharge Équipe</h3>
+                <p>Ce défaut technique transforme l'expérience automatisée (Chatbot) en une obligation de traitement manuel par l'équipe d'Eldorado Design, provoquant un allongement des délais de réponse en Semaine 4.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="s7">
+        <div class="slide-header">
+            <div class="meta-info">Section 06</div>
+            <h2 class="slide-title">Rapprochements Statistiques</h2>
+        </div>
+        <div class="glass-panel" style="margin: auto 0;">
+            <p style="font-size: 20px; font-weight: 500; margin-bottom: 30px; color: #fff;">
+                Note méthodologique pour la lecture des tableaux de bord marketing :
+            </p>
+            <div class="grid-2">
+                <div>
+                    <h4 style="color:#F40009; margin-bottom: 10px;"><i class="fa-solid fa-shuffle"></i> Codes Illisibles vs Rejetés</h4>
+                    <p style="font-size: 15px;">La majorité des codes catégorisés comme "rejetés par le système informatique" découlent en réalité d'une mauvaise lecture induite par l'impression floue.</p>
+                </div>
+                <div>
+                    <h4 style="color:#F40009; margin-bottom: 10px;"><i class="fa-solid fa-shuffle"></i> Gain Différé vs Non Reçu</h4>
+                    <p style="font-size: 15px;">La nuance repose uniquement sur l'état d'esprit et l'urgence exprimée par le consommateur au téléphone lors de son appel au support.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="s8">
+        <div class="slide-header">
+            <div class="meta-info">Section 07</div>
+            <h2 class="slide-title">Poids Proportionnel des Requêtes</h2>
+        </div>
+        <div class="glass-panel metrics-stack" style="margin: auto 0;">
+            <div class="metric-row">
+                <div class="metric-label">Codes Illisibles & Rejetés</div>
+                <div class="track"><div class="fill" style="width: 65%;"></div></div>
+                <div style="width: 50px; text-align: right; font-weight: 600; color: #F40009;">65%</div>
+            </div>
+            <div class="metric-row">
+                <div class="metric-label">Gains Différés (Opérateurs)</div>
+                <div class="track"><div class="fill" style="width: 20%;"></div></div>
+                <div style="width: 50px; text-align: right; font-weight: 600;">20%</div>
+            </div>
+            <div class="metric-row">
+                <div class="metric-label">Bugs d'Accès Chatbot</div>
+                <div class="track"><div class="fill" style="width: 10%;"></div></div>
+                <div style="width: 50px; text-align: right; font-weight: 600; opacity: 0.6;">10%</div>
+            </div>
+            <div class="metric-row">
+                <div class="metric-label">Demandes d'Informations</div>
+                <div class="track"><div class="fill" style="width: 5%;"></div></div>
+                <div style="width: 50px; text-align: right; font-weight: 600; opacity: 0.4;">5%</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="s9">
+        <div class="slide-header">
+            <div class="meta-info">Section 08</div>
+            <h2 class="slide-title">Recommandations Immédiates</h2>
+        </div>
+        <div class="grid-3" style="margin: auto 0;">
+            <div class="glass-panel">
+                <div style="font-size: 24px; font-weight: 700; color: #F40009; margin-bottom: 10px;">01. Technique</div>
+                <p style="font-size: 14px;">Mettre en place un script de tolérance sur le Chatbot permettant de tester automatiquement les substitutions courantes (ex: remplacer 'O' par '0').</p>
+            </div>
+            <div class="glass-panel">
+                <div style="font-size: 24px; font-weight: 700; color: #F40009; margin-bottom: 10px;">02. Process</div>
+                <p style="font-size: 14px;">Ajouter un message d'attente automatique rappelant aux participants un délai de vérification réseau pouvant atteindre 48 heures maximum.</p>
+            </div>
+            <div class="glass-panel">
+                <div style="font-size: 24px; font-weight: 700; color: #F40009; margin-bottom: 10px;">03. Print</div>
+                <p style="font-size: 14px;">Ajuster la calibration des têtes d'impression en usine d'embouteillage pour contrer les anomalies de déchiffrage.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="s10">
+        <div style="margin: auto; text-align: center;">
+            <h2 style="font-size: 56px; margin-bottom: 20px;">Questions & Réponses</h2>
+            <p style="font-size: 18px; max-width: 600px; margin: 0 auto 40px; opacity: 0.7;">
+                Merci pour votre attention. Le registre de données CRM historique reste consultable pour audit complémentaire.
+            </p>
+            <div style="font-size: 11px; tracking: 2px; text-transform: uppercase; opacity: 0.3;">
+                Livrable Stratégique Eldorado Design • Kinshasa 2026
+            </div>
+        </div>
+    </div>
+
+    <div class="deck-controls">
+        <div class="meta-info" id="deck-tracker">Slide 1 / 10</div>
+        <div class="indicators" id="dots-container"></div>
+        <div class="nav-arrows">
+            <button class="arrow" onclick="prevSlide()"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="arrow" onclick="nextSlide()"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // ENGINE DE NAVIGATION ULTRA-RÉACTIF
+    let currentIdx = 0;
+    const slides = document.querySelectorAll('.slide');
+    const tracker = document.getElementById('deck-tracker');
+    const dotsContainer = document.getElementById('dots-container');
+
+    // Génération des indicateurs du bas
+    slides.forEach((_, i) => {
+        const d = document.createElement('div');
+        d.className = `dot ${i === 0 ? 'active' : ''}`;
+        dotsContainer.appendChild(d);
+    });
+    const dots = document.querySelectorAll('.dot');
+
+    function showSlide(idx) {
+        if(idx < 0 || idx >= slides.length) return;
+        slides[currentIdx].classList.remove('active');
+        dots[currentIdx].classList.remove('active');
+        
+        currentIdx = idx;
+        
+        slides[currentIdx].classList.add('active');
+        dots[currentIdx].classList.add('active');
+        tracker.innerText = `Slide ${currentIdx + 1} / ${slides.length}`;
+    }
+
+    function nextSlide() { if(currentIdx < slides.length - 1) showSlide(currentIdx + 1); }
+    function prevSlide() { if(currentIdx > 0) showSlide(currentIdx - 1); }
+
+    // Navigation au clavier fluide pour la soutenance
+    window.addEventListener('keydown', (e) => {
+        if(e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+        if(e.key === 'ArrowLeft') prevSlide();
+    });
+
+    // MODULE DE DIRECTION DU CURSEUR ET HALO EN FLUIDE 60FPS
+    const cursor = document.getElementById('custom-cursor');
+    const halo = document.getElementById('cursor-halo');
+
+    window.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+        
+        // Petit amorti naturel pour le halo lumineux arrière
+        halo.animate({
+            left: e.clientX + 'px',
+            top: e.clientY + 'px'
+        }, { duration: 400, fill: "forwards" });
+    });
+
+    // Animations d'échelle du pointeur au survol
+    document.querySelectorAll('button, tr, .interactive-card').forEach(item => {
+        item.addEventListener('mouseenter', () => {
+            cursor.style.width = '24px';
+            cursor.style.height = '24px';
+            cursor.style.backgroundColor = 'rgba(254,0,9,0.4)';
+        });
+        item.addEventListener('mouseleave', () => {
+            cursor.style.width = '8px';
+            cursor.style.height = '8px';
+            cursor.style.backgroundColor = '#F40009';
+        });
+    });
+
+    // ENGINE DE FILTRE DYNAMIQUE INTERACTIF (SLIDE 5)
+    function updateWeeklyData(weekNum, count, status, percent) {
+        document.getElementById('week-title').innerText = `Statistiques Semaine ${weekNum}`;
+        document.getElementById('week-status').innerText = status;
+        
+        const labelStatus = document.getElementById('week-status');
+        if(weekNum === 4) {
+            labelStatus.style.background = 'rgba(239, 68, 68, 0.2)';
+            labelStatus.style.color = '#ef4444';
+        } else if (weekNum === 2 || weekNum === 3) {
+            labelStatus.style.background = 'rgba(234, 179, 8, 0.2)';
+            labelStatus.style.color = '#eab308';
+        } else {
+            labelStatus.style.background = 'rgba(34, 197, 94, 0.2)';
+            labelStatus.style.color = '#22c55e';
+        }
+
+        document.getElementById('bar-fill-1').style.width = percent;
+        
+        // Changement d'état actif des boutons
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+</script>
+
+</body>
+</html>
+

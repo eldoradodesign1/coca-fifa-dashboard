@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="header.title">Rapport d'Activité - Coca-Cola FIFA 2026</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+<!-- Curseur personnalisé -->
+<div id="custom-cursor"></div>
+<div id="cursor-halo"></div>
+
+<div class="container">
+  
+  <!-- ============================================
+       SIDEBAR NAVIGATION
+       ============================================ -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <i class="fas fa-chart-line"></i>
+        <span data-i18n="sidebar.title">Coca-Cola FIFA 2026</span>
+      </div>
+      <button class="sidebar-toggle">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <!-- Navigation Links -->
+    <nav class="nav-section">
+      <div class="nav-section-title" data-i18n="sidebar.sections">Sections</div>
+      
+      <button class="nav-link active" data-slide="0">
+        <i class="fas fa-play-circle"></i>
+        <span data-i18n="sidebar.nav.overview">Aperçu</span>
+      </button>
+      
+      <button class="nav-link" data-slide="1">
+        <i class="fas fa-cogs"></i>
+        <span data-i18n="sidebar.nav.context">Contexte</span>
+      </button>
+      
+      <button class="nav-link" data-slide="2">
+        <i class="fas fa-chart-bar"></i>
+        <span data-i18n="sidebar.nav.kpis">Indicateurs Clés</span>
+      </button>
+      
+      <button class="nav-link" data-slide="3">
+        <i class="fas fa-list"></i>
+        <span data-i18n="sidebar.nav.matrix">Matrice</span>
+      </button>
+      
+      <button class="nav-link" data-slide="4">
+        <i class="fas fa-chart-area"></i>
+        <span data-i18n="sidebar.nav.analysis">Analyse</span>
+      </button>
+      
+      <button class="nav-link" data-slide="5">
+        <i class="fas fa-exclamation-circle"></i>
+        <span data-i18n="sidebar.nav.critical">Point Critique</span>
+      </button>
+      
+      <button class="nav-link" data-slide="6">
+        <i class="fas fa-book"></i>
+        <span data-i18n="sidebar.nav.methodology">Méthodologie</span>
+      </button>
+      
+      <button class="nav-link" data-slide="7">
+        <i class="fas fa-sliders-h"></i>
+        <span data-i18n="sidebar.nav.weighting">Poids</span>
+      </button>
+      
+      <button class="nav-link" data-slide="8">
+        <i class="fas fa-star"></i>
+        <span data-i18n="sidebar.nav.recommendations">Recommandations</span>
+      </button>
+      
+      <button class="nav-link" data-slide="9">
+        <i class="fas fa-comments"></i>
+        <span data-i18n="sidebar.nav.qa">Q&A</span>
+      </button>
+    </nav>
+    
+    <!-- Controls Section -->
+    <div class="sidebar-controls">
+
+      <!-- Language and Theme Controls -->
+      <div class="goup-language-and-theme">
+        <!-- Language Control -->
+        <div class="control-group">
+          <label class="control-label" data-i18n="controls.language">Langue</label>
+          <button id="language-toggle" class="btn-control language-toggle">
+              <i class="fas fa-globe"></i>
+              <span id="current-language">FR</span>
+          </button>
+          <!-- <div class="control-buttons">
+            <button class="btn-control active" data-lang="fr" data-i18n="controls.light">FR</button>
+            <button class="btn-control" data-lang="en" data-i18n="controls.dark">EN</button>
+          </div> -->
+        </div>
+        
+        <div class="separator"></div>
+
+
+        <!-- Theme Control -->
+        <div class="control-group">
+          <label class="control-label" data-i18n="controls.theme">Thème</label>
+          <div class="control-buttons">
+            <button class="btn-control active" data-theme="light" data-i18n="controls.light">☀️</button>
+            <button class="btn-control" data-theme="dark" data-i18n="controls.dark">🌙</button>
+          </div>
+        </div>
+      </div>
+
+      
+      <!-- Google Sheet URL Input -->
+      <div class="control-group">
+        <label class="control-label" data-i18n="controls.sheet_url">Google Sheet</label>
+        <input 
+          type="text" 
+          id="sheet-url-input" 
+          class="input-sheet-url" 
+          data-i18n-placeholder="controls.sheet_placeholder"
+          placeholder="Collez l'URL du G-Sheet ici..."
+        >
+      </div>
+      
+      <!-- Sync Button -->
+      <button id="btn-sync" class="btn-sync" data-i18n="controls.sync">
+        <i class="fas fa-sync-alt"></i> Synchroniser
+      </button>
+      
+      <!-- Sync Status -->
+      <div id="sync-status" class="sync-status"></div>
+    </div>
+  </aside>
+  
+  <!-- ============================================
+       MAIN CONTENT AREA
+       ============================================ -->
+  <main class="main-content">
+    
+    <!-- Top Header -->
+    <header class="top-header">
+      <div>
+        <h1 class="header-title" data-i18n="header.title">Rapport d'Activité</h1>
+        <p style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;" data-i18n="header.subtitle">Promo Coca-Cola FIFA 2026</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-icon" id="btn-refresh" title="Actualiser">
+          <i class="fas fa-redo"></i>
+        </button>
+      </div>
+    </header>
+    
+    <!-- Presentation Deck -->
+    <div class="presentation-container">
+      <div class="presentation-deck">
+        
+        <!-- ============================================
+             SLIDE 1: TITLE
+             ============================================ -->
+        <div class="slide active" id="s1">
+          <div style="margin: auto; text-align: center;">
+            <h1 style="font-size: 72px; line-height: 1.05; font-weight: 700; margin-bottom: 20px;">
+              CRM PROMO<br><span style="color: var(--accent-red); text-shadow: 0 0 40px rgba(244,0,9,0.4);">FIFA 2026</span>
+            </h1>
+            <p style="font-size: 18px; letter-spacing: 6px; text-transform: uppercase; opacity: 0.5; font-weight: 300;" data-i18n="slide.subtitle">Rapport Consolidé Activité • Semaines 1 — 4</p>
+          </div>
+        </div>
+        
+        <!-- ============================================
+             SLIDE 2: OPERATIONAL CONTEXT
+             ============================================ -->
+        <div class="slide" id="s2">
+          <div class="slide-header">
+            <div class="meta-info">Section 01</div>
+            <h2 class="slide-title" data-i18n="slide2.title">Contexte Opérationnel</h2>
+          </div>
+          <div class="grid-2" style="margin: auto 0;">
+            <p style="font-size: 20px; line-height: 1.7; font-weight: 300; color: var(--text-primary);" data-i18n="slide2.description">
+              Lancement stratégique de la campagne d'activation le 8 Juin 2026. Prise en main immédiate du support de gestion par l'équipe CRM le 9 Juin afin de structurer la remontée de données et optimiser l'entonnoir d'engagement.
+            </p>
+            <div class="glass-panel">
+              <h3 style="margin-bottom: 15px; color: var(--accent-red);" data-i18n="slide2.mission">
+                <i class="fa-solid fa-crosshairs" style="margin-right: 10px;"></i> Mission Clé
+              </h3>
+              <p data-i18n="slide2.mission_desc">Transformer le flux brut d'appels entrants et d'interactions WhatsApp en rapports qualitatifs exploitables pour l'audit marketing final.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ============================================
+             SLIDE 3: KPI
+             ============================================ -->
+        <div class="slide" id="s3">
+          <div class="slide-header">
+            <div class="meta-info">Section 02</div>
+            <h2 class="slide-title" data-i18n="slide3.title">Indicateurs Majeurs (KPI)</h2>
+          </div>
+          <div class="grid-3">
+            <div class="interactive-card">
+              <i class="fa-solid fa-database"></i>
+              <div class="huge-number" data-kpi="crm-lines">871</div>
+              <h3 data-i18n="slide3.crm_lines">Lignes CRM</h3>
+              <p style="font-size: 14px; margin-top: 10px;" data-i18n="slide3.crm_desc">Enregistrements d'incidents consolidés et qualifiés.</p>
+            </div>
+            <div class="interactive-card">
+              <i class="fa-solid fa-filter"></i>
+              <div class="huge-number">100%</div>
+              <h3 data-i18n="slide3.segmentation">Segmentation</h3>
+              <p style="font-size: 14px; margin-top: 10px;" data-i18n="slide3.segmentation_desc">Saisie rigoureuse par type de plainte et région.</p>
+            </div>
+            <div class="interactive-card">
+              <i class="fa-solid fa-map-location-dot"></i>
+              <div class="huge-number">Hub</div>
+              <h3 data-i18n="slide3.hub">Kinshasa</h3>
+              <p style="font-size: 14px; margin-top: 10px;" data-i18n="slide3.hub_desc">Épicentre du traitement opérationnel Eldorado.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ============================================
+             SLIDE 4: INCIDENT MATRIX
+             ============================================ -->
+        <div class="slide" id="s4">
+          <div class="slide-header">
+            <div class="meta-info">Section 03</div>
+            <h2 class="slide-title" data-i18n="slide4.title">Matrice des Incidents</h2>
+          </div>
+          <div class="glass-panel matrix-shell" style="margin-top: 8px; padding: 0;">
+            <div class="matrix-table-wrapper">
+              <table id="incident-matrix-table" class="incident-matrix-table">
+                <thead></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ============================================
+             SLIDE 5: WEEKLY ANALYSIS
+             ============================================ -->
+        <div class="slide" id="s5">
+          <div class="slide-header">
+            <div class="meta-info">Section 04 • Module Dynamique</div>
+            <h2 class="slide-title" data-i18n="slide5.title">Analyse Chronologique par Filtre</h2>
+          </div>
+          <div class="filter-nav"></div>
+          <div class="grid-2" style="margin-top: 10px; gap: 24px; align-items: center;">
+            <div class="glass-panel week-panel" style="text-align: center;">
+              <h3 id="week-title" style="color: var(--accent-red); margin-bottom: 20px;">Statistiques Semaine 1</h3>
+              <div style="font-size: 64px; font-weight: 700; margin-bottom: 10px;" data-metric="ticket-count">144</div>
+              <p data-i18n="slide5.tickets">Tickets Enregistrés</p>
+              <div id="week-status" style="margin-top: 15px; padding: 6px 15px; background: rgba(34, 197, 94, 0.2); border-radius: 20px; display: inline-block; color: #22c55e;">Phase Test / Stable</div>
+            </div>
+            <div class="metrics-stack">
+              <div class="metric-row">
+                <div class="metric-label" data-i18n="slide5.rate">Taux d'incidents capsule</div>
+                <div class="track"><div class="fill" id="bar-fill-1" style="width: 25%;"></div></div>
+              </div>
+              <div class="week-bars" id="week-bars"></div>
+              <div class="week-legend" id="week-pie-legend"></div>
+              <p style="font-size: 14px; opacity: 0.6;" data-i18n="slide5.hint">Cliquez sur les boutons de semaine ci-dessus pour observer l'évolution exponentielle des goulots d'étranglement.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ============================================
+             SLIDE 6: CRITICAL POINT
+             ============================================ -->
+        <div class="slide" id="s6">
+          <div class="slide-header">
+            <div class="meta-info">Section 05</div>
+            <h2 class="slide-title" data-i18n="slide6.title">Point Critique : Lisibilité</h2>
+          </div>
+          <div class="grid-2" style="margin: auto 0;">
+            <div class="glass-panel">
+              <h3 style="margin-bottom: 15px; color: var(--accent-red);" data-i18n="slide6.anomaly">
+                <i class="fa-solid fa-eye-slash" style="margin-right: 10px;"></i> Anomalie Majeure
+              </h3>
+              <p data-i18n="slide6.anomaly_desc">Les codes imprimés sous les capsules présentent des défauts de lisibilité chroniques, transformant l'expérience utilisateur en source de frustration.</p>
+            </div>
+            <div class="glass-panel" style="background: rgba(244,0,9,0.02); border-color: rgba(244,0,9,0.15);">
+              <h3 style="margin-bottom: 15px;" data-i18n="slide6.overload">Surcharge Équipe</h3>
+              <p data-i18n="slide6.overload_desc">Ce défaut technique transforme l'expérience automatisée (Chatbot) en une obligation de traitement manuel par l'équipe d'Eldorado Design, provoquant un allongement des délais de réponse en Semaine 4.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ============================================
+             SLIDE 7: METHODOLOGY
+             ============================================ -->
+        <div class="slide" id="s7">
+          <div class="slide-header">
+            <div class="meta-info">Section 06</div>
+            <h2 class="slide-title" data-i18n="slide7.title">Rapprochements Statistiques</h2>
+          </div>
+          <div class="glass-panel" style="margin: auto 0;">
+            <p style="font-size: 20px; font-weight: 500; margin-bottom: 30px; color: var(--text-primary);" data-i18n="slide7.note">
+              Note méthodologique pour la lecture des tableaux de bord marketing :
+            </p>
+            <div class="grid-2">
+              <div>
+                <h4 style="color: var(--accent-red); margin-bottom: 10px;" data-i18n="slide7.unreadable_vs">
+                  <i class="fa-solid fa-shuffle"></i> Codes Illisibles vs Rejetés
+                </h4>
+                <p style="font-size: 15px;" data-i18n="slide7.unreadable_vs_desc">La majorité des codes catégorisés comme "rejetés par le système informatique" découlent en réalité d'une mauvaise lecture induite par l'impression floue.</p>
+              </div>
+              <div>
+                <h4 style="color: var(--accent-red); margin-bottom: 10px;" data-i18n="slide7.delayed_vs">
+                  <i class="fa-solid fa-shuffle"></i> Gain Différé vs Non Reçu
+                </h4>
+                <p style="font-size: 15px;" data-i18n="slide7.delayed_vs_desc">La nuance repose uniquement sur l'état d'esprit et l'urgence exprimée par le consommateur au téléphone lors de son appel au support.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ============================================
+             SLIDE 8: PROPORTIONAL WEIGHTS
+             ============================================ -->
+        <div class="slide" id="s8">
+          <div class="slide-header">
+            <div class="meta-info">Section 07</div>
+            <h2 class="slide-title" data-i18n="slide8.title">Poids Proportionnel des Requêtes</h2>
+          </div>
+          <div class="glass-panel metrics-stack" style="margin: auto 0;">
+            <div class="weight-chart-shell">
+              <div class="weight-bars" id="weight-bars"></div>
+            </div>
+            <div class="weight-legend">
+              <div class="metric-row legend-row" id="metric-unreadable">
+                <span class="legend-swatch"></span>
+                <div class="metric-label" data-i18n="slide8.unreadable">Codes Illisibles & Rejetés</div>
+                <div class="metric-value">29%</div>
+              </div>
+              <div class="metric-row legend-row" id="metric-delayed">
+                <span class="legend-swatch"></span>
+                <div class="metric-label" data-i18n="slide8.delayed">Gains Différés (Opérateurs)</div>
+                <div class="metric-value">21%</div>
+              </div>
+              <div class="metric-row legend-row" id="metric-bugs">
+                <span class="legend-swatch"></span>
+                <div class="metric-label" data-i18n="slide8.bugs">Bugs d'Accès Chatbot</div>
+                <div class="metric-value">15%</div>
+              </div>
+              <div class="metric-row legend-row" id="metric-info">
+                <span class="legend-swatch"></span>
+                <div class="metric-label" data-i18n="slide8.info">Demandes d'Informations</div>
+                <div class="metric-value">35%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ============================================
+             SLIDE 9: RECOMMENDATIONS
+             ============================================ -->
+        <div class="slide" id="s9">
+          <div class="slide-header">
+            <div class="meta-info">Section 08</div>
+            <h2 class="slide-title" data-i18n="slide9.title">Recommandations Immédiates</h2>
+          </div>
+          <div class="grid-3" style="margin: auto 0;">
+            <div class="glass-panel">
+              <div style="font-size: 24px; font-weight: 700; color: var(--accent-red); margin-bottom: 10px;">01. <span data-i18n="slide9.tech">Technique</span></div>
+              <p style="font-size: 14px;" data-i18n="slide9.tech_desc">Mettre en place un script de tolérance sur le Chatbot permettant de tester automatiquement les substitutions courantes (ex: remplacer 'O' par '0').</p>
+            </div>
+            <div class="glass-panel">
+              <div style="font-size: 24px; font-weight: 700; color: var(--accent-red); margin-bottom: 10px;">02. <span data-i18n="slide9.process">Process</span></div>
+              <p style="font-size: 14px;" data-i18n="slide9.process_desc">Ajouter un message d'attente automatique rappelant aux participants un délai de vérification réseau pouvant atteindre 48 heures maximum.</p>
+            </div>
+            <div class="glass-panel">
+              <div style="font-size: 24px; font-weight: 700; color: var(--accent-red); margin-bottom: 10px;">03. <span data-i18n="slide9.print">Print</span></div>
+              <p style="font-size: 14px;" data-i18n="slide9.print_desc">Ajuster la calibration des têtes d'impression en usine d'embouteillage pour contrer les anomalies de déchiffrage.</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- ============================================
+             SLIDE 10: Q&A
+             ============================================ -->
+        <div class="slide" id="s10">
+          <div style="margin: auto; text-align: center;">
+            <h2 style="font-size: 56px; margin-bottom: 20px;" data-i18n="slide10.title">Questions & Réponses</h2>
+            <p style="font-size: 18px; max-width: 600px; margin: 0 auto 40px; opacity: 0.7;" data-i18n="slide10.thanks">
+              Merci pour votre attention. Le registre de données CRM historique reste consultable pour audit complémentaire.
+            </p>
+            <div style="font-size: 11px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.3;" data-i18n="slide10.footer">
+              Livrable Stratégique Eldorado Design • Kinshasa 2026
+            </div>
+          </div>
+        </div>
+        
+        <!-- Deck Controls -->
+        <div class="deck-controls">
+          <div class="meta-info" id="deck-tracker">Slide 1 / 10</div>
+          <div class="indicators" id="dots-container"></div>
+          <div class="nav-arrows">
+            <button class="arrow" title="Précédent">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button class="arrow" title="Suivant">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Scripts -->
+<script src="js/i18n.js"></script>
+<script src="js/sheets-sync.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
