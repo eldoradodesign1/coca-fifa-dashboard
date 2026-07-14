@@ -101,7 +101,7 @@ const i18n = {
       
       'slide10.title': 'Questions & Réponses',
       'slide10.thanks': 'Merci pour votre attention. Le registre de données CRM historique reste consultable pour audit complémentaire.',
-      'slide10.footer': 'Propulsé par Beyond The Line marketing Solutions • DRC 2026',
+      'slide10.footer': 'Développé par Beyond The Line marketing Solutions • DRC 2026',
       
       // Status messages
       'status.syncing': 'Synchronisation en cours...',
