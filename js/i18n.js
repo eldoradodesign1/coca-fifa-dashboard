@@ -101,7 +101,7 @@ const i18n = {
       
       'slide10.title': 'Questions & Réponses',
       'slide10.thanks': 'Merci pour votre attention. Le registre de données CRM historique reste consultable pour audit complémentaire.',
-      'slide10.footer': 'Livrable Stratégique Eldorado Design • Kinshasa 2026',
+      'slide10.footer': 'Livrable Stratégique Beyond The Line marketing Solutions • DRC 2026',
       
       // Status messages
       'status.syncing': 'Synchronisation en cours...',
@@ -204,7 +204,7 @@ const i18n = {
       
       'slide10.title': 'Questions & Answers',
       'slide10.thanks': 'Thank you for your attention. The historical CRM data registry remains available for further audit.',
-      'slide10.footer': 'Strategic Deliverable Eldorado Design • Kinshasa 2026',
+      'slide10.footer': 'Strategic Deliverable Beyond The Line marketing Solutions • DRC 2026',
       
       // Status messages
       'status.syncing': 'Syncing...',
