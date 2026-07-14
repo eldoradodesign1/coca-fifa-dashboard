@@ -52,7 +52,7 @@ const i18n = {
       'slide3.segmentation': 'Segmentation',
       'slide3.segmentation_desc': 'Saisie rigoureuse par type de plainte et région.',
       'slide3.hub': 'Hub',
-      'slide3.hub_desc': 'Épicentre du traitement opérationnel Eldorado.',
+      'slide3.hub_desc': 'Épicentre du traitement opérationnel.',
       
       'slide4.title': 'Matrice des Incidents',
       'slide4.category': 'Catégorisation',
@@ -76,7 +76,7 @@ const i18n = {
       'slide6.anomaly': 'Anomalie Majeure',
       'slide6.anomaly_desc': 'Les codes imprimés sous les capsules présentent des défauts de lisibilité chroniques, transformant l\'expérience utilisateur en source de frustration.',
       'slide6.overload': 'Surcharge Équipe',
-      'slide6.overload_desc': 'Ce défaut technique transforme l\'expérience automatisée (Chatbot) en une obligation de traitement manuel par l\'équipe d\'Eldorado Design, provoquant un allongement des délais de réponse en Semaine 4.',
+      'slide6.overload_desc': 'Ce défaut technique transforme l\'expérience automatisée (Chatbot) en une obligation de traitement manuel par l\'équipe, provoquant un allongement des délais de réponse en Semaine 4.',
       
       'slide7.title': 'Rapprochements Statistiques',
       'slide7.note': 'Note méthodologique pour la lecture des tableaux de bord marketing :',
@@ -155,7 +155,7 @@ const i18n = {
       'slide3.segmentation': 'Segmentation',
       'slide3.segmentation_desc': 'Rigorous data entry by complaint type and region.',
       'slide3.hub': 'Hub',
-      'slide3.hub_desc': 'Epicenter of Eldorado operational processing.',
+      'slide3.hub_desc': 'Epicenter of operational processing.',
       
       'slide4.title': 'Incident Matrix',
       'slide4.category': 'Categorization',
@@ -179,7 +179,7 @@ const i18n = {
       'slide6.anomaly': 'Major Anomaly',
       'slide6.anomaly_desc': 'Codes printed under caps present chronic readability defects, transforming user experience into a source of frustration.',
       'slide6.overload': 'Team Overload',
-      'slide6.overload_desc': 'This technical defect transforms automated experience (Chatbot) into manual processing obligation by Eldorado Design team, causing response delays in Week 4.',
+      'slide6.overload_desc': 'This technical defect transforms automated experience (Chatbot) into manual processing obligation by the team, causing response delays in Week 4.',
       
       'slide7.title': 'Statistical Reconciliation',
       'slide7.note': 'Methodological note for reading marketing dashboards:',
