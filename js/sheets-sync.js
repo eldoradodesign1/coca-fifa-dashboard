@@ -4,6 +4,7 @@
  */
 
 const sheetsSync = {
+  defaultSheetUrl: 'https://docs.google.com/spreadsheets/d/1dotJ95xAX-AzP5aCdH8gUPMjrelrsuXvWD1FMZK1Kso/edit?usp=sharing',
   sheetUrl: localStorage.getItem('sheetUrl') || '',
   sheetId: null,
   lastSync: localStorage.getItem('lastSync') || null,
@@ -27,6 +28,10 @@ const sheetsSync = {
    * Définir l'URL du Google Sheet
    */
   setSheetUrl(url) {
+    if (!url || !url.trim()) {
+      url = this.defaultSheetUrl;
+    }
+
     if (!this.isValidSheetUrl(url)) {
       return { success: false, error: i18n.t('status.invalid_url') };
     }
@@ -36,6 +41,17 @@ const sheetsSync = {
     localStorage.setItem('sheetUrl', url);
     
     return { success: true };
+  },
+
+  /**
+   * Charger l'URL du Google Sheet sauvegardée ou la valeur par défaut
+   */
+  loadDefaultSheetUrl() {
+    const savedUrl = localStorage.getItem('sheetUrl');
+    if (this.isValidSheetUrl(savedUrl)) {
+      return this.setSheetUrl(savedUrl);
+    }
+    return this.setSheetUrl(this.defaultSheetUrl);
   },
   
   /**
@@ -206,8 +222,25 @@ const sheetsSync = {
     Object.keys(stats.weeks).forEach(week => {
       const weekData = stats.weeks[week];
       const unreadable = (weekData.categories['Unreadable code'] || 0) + (weekData.categories['Code rejected'] || 0);
-      weekData.unreadableRate = Math.round((unreadable / weekData.count) * 100);
+      weekData.unreadableRate = weekData.count > 0 ? Math.round((unreadable / weekData.count) * 100) : 0;
     });
+
+    const weekNumbers = Object.keys(stats.weeks)
+      .map(Number)
+      .filter(n => !Number.isNaN(n));
+
+    if (weekNumbers.length > 0) {
+      const maxWeek = Math.max(...weekNumbers);
+      for (let week = 1; week <= maxWeek; week++) {
+        if (!stats.weeks[week]) {
+          stats.weeks[week] = {
+            count: 0,
+            categories: {},
+            unreadableRate: 0,
+          };
+        }
+      }
+    }
     
     return stats;
   },
@@ -224,7 +257,7 @@ const sheetsSync = {
     const startDate = new Date(2026, 5, 8); // 8 Juin 2026
     const weekDiff = Math.floor((date - startDate) / (7 * 24 * 60 * 60 * 1000));
     
-    return Math.min(Math.max(1, weekDiff + 1), 4);
+    return Math.max(1, weekDiff + 1);
   },
   
   /**
@@ -241,9 +274,5 @@ const sheetsSync = {
 
 // Initialiser au chargement
 document.addEventListener('DOMContentLoaded', () => {
-  // Charger l'URL sauvegardée
-  const savedUrl = localStorage.getItem('sheetUrl');
-  if (savedUrl) {
-    sheetsSync.setSheetUrl(savedUrl);
-  }
+  sheetsSync.loadDefaultSheetUrl();
 });

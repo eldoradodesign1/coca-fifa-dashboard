@@ -39,6 +39,7 @@ const i18n = {
       // Slides
       'slide.title': 'CRM PROMO FIFA 2026',
       'slide.subtitle': 'Rapport Consolidé Activité • Semaines 1 — 4',
+      'slide.subtitle.pattern': 'Rapport Consolidé Activité • Semaines {range}',
       
       'slide2.title': 'Contexte Opérationnel',
       'slide2.description': 'Lancement stratégique de la campagne d\'activation le 8 Juin 2026. Prise en main immédiate du support de gestion par l\'équipe CRM le 9 Juin afin de structurer la remontée de données et optimiser l\'entonnoir d\'engagement.',
@@ -69,7 +70,7 @@ const i18n = {
       'slide5.week': 'Semaine',
       'slide5.tickets': 'Tickets Enregistrés',
       'slide5.rate': 'Taux d\'incidents capsule',
-      'slide5.hint': 'Cliquez sur les boutons de semaine ci-dessus pour observer l\'évolution exponentielle des goulots d\'étranglement.',
+      'slide5.hint': 'Utilisez les touches 1-9 ou cliquez sur les boutons de semaine ci-dessus pour observer l\'évolution exponentielle des goulots d\'étranglement.',
       
       'slide6.title': 'Point Critique : Lisibilité',
       'slide6.anomaly': 'Anomalie Majeure',
@@ -141,6 +142,7 @@ const i18n = {
       // Slides
       'slide.title': 'CRM PROMO FIFA 2026',
       'slide.subtitle': 'Consolidated Activity Report • Weeks 1 — 4',
+      'slide.subtitle.pattern': 'Consolidated Activity Report • Weeks {range}',
       
       'slide2.title': 'Operational Context',
       'slide2.description': 'Strategic launch of the activation campaign on June 8, 2026. Immediate takeover of management support by the CRM team on June 9 to structure data collection and optimize the engagement funnel.',
@@ -171,7 +173,7 @@ const i18n = {
       'slide5.week': 'Week',
       'slide5.tickets': 'Recorded Tickets',
       'slide5.rate': 'Cap incident rate',
-      'slide5.hint': 'Click the week buttons above to observe the exponential evolution of bottlenecks.',
+      'slide5.hint': 'Use numeric keys 1-9 or click the week buttons above to observe the exponential evolution of bottlenecks.',
       
       'slide6.title': 'Critical Point: Readability',
       'slide6.anomaly': 'Major Anomaly',

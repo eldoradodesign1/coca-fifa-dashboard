@@ -49,9 +49,13 @@ const app = {
   },
 
   /**
-   * Remplir le champ de l'URL Google Sheet avec la valeur sauvegardée
+   * Remplir le champ de l'URL Google Sheet avec la valeur sauvegardée ou par défaut
    */
   populateSheetInput() {
+    if (!sheetsSync.sheetUrl) {
+      sheetsSync.loadDefaultSheetUrl();
+    }
+
     const input = document.getElementById('sheet-url-input');
     if (input && sheetsSync.sheetUrl) {
       input.value = sheetsSync.sheetUrl;
@@ -108,8 +112,26 @@ const app = {
   setupEventListeners() {
     // Navigation au clavier
     document.addEventListener('keydown', (e) => {
+      const active = document.activeElement;
+      if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)) {
+        return;
+      }
+
+      if (e.ctrlKey && (e.code === 'Space' || e.key === ' ')) {
+        e.preventDefault();
+        this.syncSheetData();
+        return;
+      }
+
       if (e.key === 'ArrowRight' || e.key === ' ') this.nextSlide();
       if (e.key === 'ArrowLeft') this.prevSlide();
+
+      if (this.currentSlide === 4) {
+        const numericWeek = this.getWeekFromKey(e);
+        if (numericWeek) {
+          this.updateWeeklyData(numericWeek);
+        }
+      }
     });
     
     // Boutons de navigation
@@ -151,9 +173,16 @@ const app = {
     document.getElementById('btn-refresh')?.addEventListener('click', () => this.refreshData());
     
     // Input URL du Google Sheet
-    document.getElementById('sheet-url-input')?.addEventListener('change', (e) => {
+    const sheetUrlInput = document.getElementById('sheet-url-input');
+    sheetUrlInput?.addEventListener('change', (e) => {
       sheetsSync.setSheetUrl(e.target.value);
       this.updateSidebarStatus();
+    });
+    sheetUrlInput?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        this.syncSheetData();
+      }
     });
     
     // Toggle sidebar mobile
@@ -177,6 +206,18 @@ const app = {
     window.addEventListener('languageChanged', () => {
       this.updateSlideContent();
     });
+  },
+
+  /**
+   * Obtenir une semaine depuis une touche numérique
+   */
+  getWeekFromKey(e) {
+    if (!e.key) return null;
+    const key = e.key.trim();
+    if (!/^[1-9]$/.test(key)) return null;
+    const targetWeek = Number(key);
+    if (!this.stats?.weeks) return null;
+    return Object.keys(this.stats.weeks).find(w => Number(w) === targetWeek) || null;
   },
   
   /**
@@ -301,7 +342,22 @@ const app = {
     const syncStatus = document.getElementById('sync-status');
     
     if (!syncBtn) return { success: false, error: 'Missing UI' };
-    
+
+    const sheetUrlInput = document.getElementById('sheet-url-input');
+    if (sheetUrlInput && !sheetUrlInput.value.trim()) {
+      sheetUrlInput.value = sheetsSync.defaultSheetUrl;
+    }
+
+    const sheetValue = sheetUrlInput?.value.trim() || sheetsSync.defaultSheetUrl;
+    const urlResult = sheetsSync.setSheetUrl(sheetValue);
+    if (!urlResult.success) {
+      if (syncStatus && showStatus) {
+        syncStatus.textContent = urlResult.error;
+        syncStatus.className = 'sync-status error';
+      }
+      return { success: false, error: urlResult.error };
+    }
+
     syncBtn.disabled = true;
     syncBtn.classList.add('loading');
     
@@ -378,6 +434,7 @@ const app = {
 
     // Mettre à jour le module dynamique (Slide 5)
     this.updateWeeklyModule();
+    this.updateSlideSubtitle();
     
     // Mettre à jour les poids proportionnels (Slide 8)
     this.updateWeightSlide();
@@ -458,12 +515,14 @@ const app = {
     
     // Créer les boutons de filtre pour chaque semaine
     const filterNav = document.querySelector('.filter-nav');
+    const weekKeys = Object.keys(this.stats.weeks).sort((a, b) => Number(a) - Number(b));
+    const defaultWeek = weekKeys[0];
+
     if (filterNav) {
       filterNav.innerHTML = '';
-      
-      Object.keys(this.stats.weeks).forEach(week => {
+      weekKeys.forEach(week => {
         const btn = document.createElement('button');
-        btn.className = `filter-btn ${week === '1' ? 'active' : ''}`;
+        btn.className = `filter-btn ${week === defaultWeek ? 'active' : ''}`;
         btn.textContent = `${i18n.t('slide5.week')} ${week}`;
         btn.onclick = () => this.updateWeeklyData(week);
         filterNav.appendChild(btn);
@@ -471,8 +530,8 @@ const app = {
     }
     
     // Afficher la première semaine par défaut
-    if (Object.keys(this.stats.weeks).length > 0) {
-      this.updateWeeklyData(Object.keys(this.stats.weeks)[0]);
+    if (defaultWeek) {
+      this.updateWeeklyData(defaultWeek);
     }
   },
   
@@ -582,12 +641,10 @@ const app = {
 
     legend.innerHTML = '';
     weeks.forEach(week => {
-      const item = document.createElement('button');
+      const item = document.createElement('div');
       item.className = `week-legend-item ${week === selectedWeek ? 'active' : ''}`;
       item.setAttribute('data-week', week);
-      item.type = 'button';
       item.textContent = `${i18n.t('slide5.week')} ${week}`;
-      item.addEventListener('click', () => this.updateWeeklyData(week));
       legend.appendChild(item);
     });
   },
@@ -668,6 +725,38 @@ const app = {
       const key = element.getAttribute('data-i18n');
       element.textContent = i18n.t(key);
     });
+    this.updateSlideSubtitle();
+  },
+
+  /**
+   * Mettre à jour le sous-titre dynamique de la slide 1
+   */
+  updateSlideSubtitle() {
+    const subtitle = document.querySelector('[data-i18n="slide.subtitle"]');
+    if (!subtitle) return;
+
+    const defaultText = i18n.t('slide.subtitle');
+    if (!this.stats?.weeks || Object.keys(this.stats.weeks).length === 0) {
+      subtitle.textContent = defaultText;
+      return;
+    }
+
+    const weekKeys = Object.keys(this.stats.weeks)
+      .map(Number)
+      .filter(n => !Number.isNaN(n))
+      .sort((a, b) => a - b);
+
+    if (weekKeys.length === 0) {
+      subtitle.textContent = defaultText;
+      return;
+    }
+
+    const range = `${weekKeys[0]} — ${weekKeys[weekKeys.length - 1]}`;
+    const pattern = i18n.t('slide.subtitle.pattern');
+
+    subtitle.textContent = pattern.includes('{range}')
+      ? pattern.replace('{range}', range)
+      : `${pattern} ${range}`;
   },
   
   /**
