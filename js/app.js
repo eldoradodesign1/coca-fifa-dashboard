@@ -5,6 +5,7 @@
 
 const app = {
   currentSlide: 0,
+  activeWeek: null,
   slides: [],
   isDarkMode: localStorage.getItem('darkMode') === 'true',
   stats: null,
@@ -20,6 +21,9 @@ const app = {
     this.setupTheme();
     this.setupCursor();
     this.setupEventListeners();
+    if (window.chartsManager) {
+      window.chartsManager.init();
+    }
     this.loadSlides();
     this.populateSheetInput();
     this.loadInitialData();
@@ -255,6 +259,10 @@ const app = {
     
     // Mettre à jour le contenu de la slide
     this.updateSlideContent();
+
+    if (window.chartsManager) {
+      window.setTimeout(() => window.chartsManager.resize(), 220);
+    }
   },
   
   /**
@@ -288,6 +296,9 @@ const app = {
   setLanguage(lang) {
     i18n.setLanguage(lang);
     this.updateLanguageButtons();
+    if (window.chartsManager) {
+      window.chartsManager.onThemeOrLanguageChange(this);
+    }
   },
   
   /**
@@ -305,6 +316,9 @@ const app = {
     
     localStorage.setItem('darkMode', isDark);
     this.updateThemeButton();
+    if (window.chartsManager) {
+      window.setTimeout(() => window.chartsManager.onThemeOrLanguageChange(this), 180);
+    }
   },
   
   /**
@@ -435,9 +449,10 @@ const app = {
     // Mettre à jour le module dynamique (Slide 5)
     this.updateWeeklyModule();
     this.updateSlideSubtitle();
-    
-    // Mettre à jour les poids proportionnels (Slide 8)
-    this.updateWeightSlide();
+
+    if (window.chartsManager) {
+      window.chartsManager.updateFromApp(this, this.activeWeek);
+    }
   },
 
   /**
@@ -523,6 +538,7 @@ const app = {
       weekKeys.forEach(week => {
         const btn = document.createElement('button');
         btn.className = `filter-btn ${week === defaultWeek ? 'active' : ''}`;
+        btn.setAttribute('data-week', week);
         btn.textContent = `${i18n.t('slide5.week')} ${week}`;
         btn.onclick = () => this.updateWeeklyData(week);
         filterNav.appendChild(btn);
@@ -541,6 +557,7 @@ const app = {
   updateWeeklyData(week) {
     const weekData = this.stats.weeks[week];
     if (!weekData) return;
+    this.activeWeek = week;
 
     const weekPanel = document.querySelector('#s5 .week-panel');
     if (weekPanel) {
@@ -557,13 +574,6 @@ const app = {
       if (ticketCount) {
         ticketCount.textContent = weekData.count;
       }
-
-      const barFill = document.getElementById('bar-fill-1');
-      if (barFill) {
-        barFill.style.width = `${weekData.unreadableRate}%`;
-      }
-
-      this.updateWeeklyBarChart(week);
 
       const weekStatus = document.getElementById('week-status');
       if (weekStatus) {
@@ -587,12 +597,12 @@ const app = {
       }
 
       document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.textContent.includes(week));
+        btn.classList.toggle('active', btn.getAttribute('data-week') === week);
       });
 
-      document.querySelectorAll('.week-legend-item').forEach(item => {
-        item.classList.toggle('active', item.getAttribute('data-week') === week);
-      });
+      if (window.chartsManager) {
+        window.chartsManager.updateFromApp(this, week);
+      }
 
       if (weekPanel) {
         weekPanel.classList.remove('is-changing');
@@ -601,118 +611,16 @@ const app = {
   },
 
   /**
-   * Mettre à jour les barres des semaines
-   */
-  updateWeeklyBarChart(selectedWeek) {
-    const container = document.getElementById('week-bars');
-    const legend = document.getElementById('week-pie-legend');
-    if (!container || !legend || !this.stats?.weeks) return;
-
-    const weeks = Object.keys(this.stats.weeks).sort((a, b) => Number(a) - Number(b));
-    const maxValue = Math.max(...weeks.map(week => this.stats.weeks[week].count || 0), 1);
-
-    container.innerHTML = '';
-    weeks.forEach(week => {
-      const weekData = this.stats.weeks[week];
-      const row = document.createElement('div');
-      row.className = `week-bar-row ${week === selectedWeek ? 'active' : ''}`;
-
-      const label = document.createElement('div');
-      label.className = 'week-bar-label';
-      label.textContent = `${i18n.t('slide5.week')} ${week}`;
-
-      const track = document.createElement('div');
-      track.className = 'week-bar-track';
-
-      const fill = document.createElement('div');
-      fill.className = 'fill week-bar-fill';
-      const width = Math.max(8, Math.round((weekData.count / maxValue) * 100));
-      fill.style.width = `${width}%`;
-      fill.style.transform = 'scaleX(1)';
-      track.appendChild(fill);
-
-      const value = document.createElement('div');
-      value.className = 'week-bar-value';
-      value.textContent = weekData.count;
-
-      row.append(label, track, value);
-      container.appendChild(row);
-    });
-
-    legend.innerHTML = '';
-    weeks.forEach(week => {
-      const item = document.createElement('div');
-      item.className = `week-legend-item ${week === selectedWeek ? 'active' : ''}`;
-      item.setAttribute('data-week', week);
-      item.textContent = `${i18n.t('slide5.week')} ${week}`;
-      legend.appendChild(item);
-    });
-  },
-  
-  /**
    * Mettre à jour la slide des poids proportionnels
    */
   updateWeightSlide() {
-    if (!this.stats) return;
-    
-    // Calculer les poids globaux
-    const total = this.stats.totalTickets;
-    
-    const unreadable = (this.stats.byCategory['Unreadable code'] || 0) + (this.stats.byCategory['Code rejected'] || 0);
-    const delayed = (this.stats.byCategory['Delayed Gain'] || 0) + (this.stats.byCategory['Prize not received'] || 0);
-    const info = (this.stats.byCategory['User does not know how to participate'] || 0) + (this.stats.byCategory['User cannot find the code'] || 0);
-    
-    const p_unreadable = Math.round((unreadable / total) * 100);
-    const p_delayed = Math.round((delayed / total) * 100);
-    const p_info = Math.round((info / total) * 100);
-    const p_bugs = 100 - p_unreadable - p_delayed - p_info;
-
-    const container = document.getElementById('weight-bars');
-    if (container) {
-      const metrics = [
-        { id: 'metric-unreadable', value: p_unreadable, label: i18n.t('slide8.unreadable') },
-        { id: 'metric-delayed', value: p_delayed, label: i18n.t('slide8.delayed') },
-        { id: 'metric-bugs', value: p_bugs, label: i18n.t('slide8.bugs') },
-        { id: 'metric-info', value: p_info, label: i18n.t('slide8.info') },
-      ];
-
-      container.innerHTML = '';
-      metrics.forEach(metric => {
-        const row = document.createElement('div');
-        row.className = 'weight-bar-row';
-
-        const label = document.createElement('div');
-        label.className = 'metric-label';
-        label.textContent = metric.label;
-
-        const track = document.createElement('div');
-        track.className = 'weight-bar-track';
-
-        const fill = document.createElement('div');
-        fill.className = 'fill weight-bar-fill';
-        fill.style.width = `${Math.max(metric.value, 6)}%`;
-        fill.style.transform = 'scaleX(1)';
-        track.appendChild(fill);
-
-        const value = document.createElement('div');
-        value.className = 'metric-value';
-        value.textContent = `${metric.value}%`;
-
-        row.append(label, track, value);
-        container.appendChild(row);
-      });
-    }
-    
-    const metrics = [
-      { id: 'metric-unreadable', value: p_unreadable },
-      { id: 'metric-delayed', value: p_delayed },
-      { id: 'metric-bugs', value: p_bugs },
-      { id: 'metric-info', value: p_info },
-    ];
-    
+    if (!this.stats || !window.chartsManager) return;
+    const metrics = window.chartsManager.getWeightMetrics(this.stats);
     metrics.forEach(metric => {
       const valueElement = document.querySelector(`#${metric.id} .metric-value`);
-      if (valueElement) valueElement.textContent = `${metric.value}%`;
+      if (valueElement) {
+        valueElement.textContent = `${metric.value}%`;
+      }
     });
   },
   
@@ -726,6 +634,7 @@ const app = {
       element.textContent = i18n.t(key);
     });
     this.updateSlideSubtitle();
+    this.updateWeightSlide();
   },
 
   /**

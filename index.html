@@ -215,19 +215,25 @@
             <div class="interactive-card">
               <i class="fa-solid fa-database"></i>
               <div class="huge-number" data-kpi="crm-lines">871</div>
+              <div class="kpi-badge" data-kpi-badge="crm">▲ 0</div>
               <h3 data-i18n="slide3.crm_lines">Lignes CRM</h3>
+              <div class="kpi-sparkline" id="kpi-spark-1"></div>
               <p style="font-size: 14px; margin-top: 10px;" data-i18n="slide3.crm_desc">Enregistrements d'incidents consolidés et qualifiés.</p>
             </div>
             <div class="interactive-card">
               <i class="fa-solid fa-filter"></i>
-              <div class="huge-number">100%</div>
+              <div class="huge-number" data-kpi="segmentation">100%</div>
+              <div class="kpi-badge" data-kpi-badge="segment">▲ 0</div>
               <h3 data-i18n="slide3.segmentation">Segmentation</h3>
+              <div class="kpi-sparkline" id="kpi-spark-2"></div>
               <p style="font-size: 14px; margin-top: 10px;" data-i18n="slide3.segmentation_desc">Saisie rigoureuse par type de plainte et région.</p>
             </div>
             <div class="interactive-card">
               <i class="fa-solid fa-map-location-dot"></i>
-              <div class="huge-number">Hub</div>
+              <div class="huge-number" data-kpi="hub">1</div>
+              <div class="kpi-badge" data-kpi-badge="hub">▲ 0</div>
               <h3 data-i18n="slide3.hub">Kinshasa</h3>
+              <div class="kpi-sparkline" id="kpi-spark-3"></div>
               <p style="font-size: 14px; margin-top: 10px;" data-i18n="slide3.hub_desc">Épicentre du traitement opérationnel.</p>
             </div>
           </div>
@@ -240,6 +246,24 @@
           <div class="slide-header">
             <div class="meta-info">Section 03</div>
             <h2 class="slide-title" data-i18n="slide4.title">Matrice des Incidents</h2>
+          </div>
+          <div class="matrix-charts-grid">
+            <div class="glass-panel chart-panel">
+              <div class="chart-title">Top 10</div>
+              <div id="matrix-top10-chart" class="chart-box chart-md"></div>
+            </div>
+            <div class="glass-panel chart-panel">
+              <div class="chart-title">Pareto</div>
+              <div id="matrix-pareto-chart" class="chart-box chart-md"></div>
+            </div>
+            <div class="glass-panel chart-panel">
+              <div class="chart-title">Categories</div>
+              <div id="matrix-donut-chart" class="chart-box chart-md"></div>
+            </div>
+            <div class="glass-panel chart-panel">
+              <div class="chart-title">Treemap</div>
+              <div id="matrix-treemap-chart" class="chart-box chart-md"></div>
+            </div>
           </div>
           <div class="glass-panel matrix-shell" style="margin-top: 8px; padding: 0;">
             <div class="matrix-table-wrapper">
@@ -269,12 +293,14 @@
               <div id="week-status" style="margin-top: 15px; padding: 6px 15px; background: rgba(34, 197, 94, 0.2); border-radius: 20px; display: inline-block; color: #22c55e;">Phase Test / Stable</div>
             </div>
             <div class="metrics-stack">
-              <div class="metric-row">
-                <div class="metric-label" data-i18n="slide5.rate">Taux d'incidents capsule</div>
-                <div class="track"><div class="fill" id="bar-fill-1" style="width: 25%;"></div></div>
+              <div class="glass-panel chart-panel">
+                <div class="chart-title" data-i18n="slide5.rate">Taux d'incidents capsule</div>
+                <div id="week-trend-chart" class="chart-box chart-lg"></div>
               </div>
-              <div class="week-bars" id="week-bars"></div>
-              <div class="week-legend" id="week-pie-legend"></div>
+              <div class="glass-panel chart-panel">
+                <div class="chart-title">Breakdown Semaine</div>
+                <div id="week-category-chart" class="chart-box chart-sm"></div>
+              </div>
               <p style="font-size: 14px; opacity: 0.6;" data-i18n="slide5.hint">Cliquez sur les boutons de semaine ci-dessus pour observer l'évolution exponentielle des goulots d'étranglement.</p>
             </div>
           </div>
@@ -298,6 +324,7 @@
             <div class="glass-panel" style="background: rgba(244,0,9,0.02); border-color: rgba(244,0,9,0.15);">
               <h3 style="margin-bottom: 15px;" data-i18n="slide6.overload">Surcharge Équipe</h3>
               <p data-i18n="slide6.overload_desc">Ce défaut technique transforme l'expérience automatisée (Chatbot) en une obligation de traitement manuel par l'équipe, provoquant un allongement des délais de réponse en Semaine 4.</p>
+              <div id="critical-chart" class="chart-box chart-md" style="margin-top: 12px;"></div>
             </div>
           </div>
         </div>
@@ -341,7 +368,7 @@
           </div>
           <div class="glass-panel metrics-stack" style="margin: auto 0;">
             <div class="weight-chart-shell">
-              <div class="weight-bars" id="weight-bars"></div>
+              <div id="weight-main-chart" class="chart-box chart-xl"></div>
             </div>
             <div class="weight-legend">
               <div class="metric-row legend-row" id="metric-unreadable">
@@ -375,6 +402,10 @@
           <div class="slide-header">
             <div class="meta-info">Section 08</div>
             <h2 class="slide-title" data-i18n="slide9.title">Recommandations Immédiates</h2>
+          </div>
+          <div class="glass-panel chart-panel" style="margin-bottom: 18px;">
+            <div class="chart-title">Synthese</div>
+            <div id="recommendations-chart" class="chart-box chart-sm"></div>
           </div>
           <div class="grid-3" style="margin: auto 0;">
             <div class="glass-panel">
@@ -426,8 +457,17 @@
 </div>
 
 <!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/sheets-sync.js"></script>
+<script src="js/charts/config.js"></script>
+<script src="js/charts/kpi.js"></script>
+<script src="js/charts/matrix.js"></script>
+<script src="js/charts/timeline.js"></script>
+<script src="js/charts/weight.js"></script>
+<script src="js/charts/recommendations.js"></script>
+<script src="js/charts/critical.js"></script>
+<script src="js/charts/manager.js"></script>
 <script src="js/app.js"></script>
 
 </body>
